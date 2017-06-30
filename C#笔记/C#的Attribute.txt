@@ -1,0 +1,103 @@
+C#的Attribute
+
+1、C#中内置的Attribute
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AttributeDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            MyClass.Message("In Main Function");
+            Function1();
+            Console.ReadLine();
+        }
+        static void Function1()
+        {
+            MyClass.Message("In Function1");
+            Function2();
+        }
+        static void Function2()
+        {
+            MyClass.Message("In Function2");
+        }
+    }
+    public class MyClass
+    {
+        //内置的Attribute
+        [Conditional("DEBUG")]
+        public static void Message(string msg)
+        {
+            Console.WriteLine(msg);
+        }
+    }
+}
+
+2、自定义Attribute；通过反射获取Attribute的信息
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AttributeDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            HelpAttribute helpAttribute;
+            //通过反射获取Attribute的信息
+            foreach (var attr in typeof(AnyClass).GetCustomAttributes(true))
+            {
+                helpAttribute = attr as HelpAttribute;
+                if (null!=helpAttribute)
+                {
+                    Console.WriteLine("AnyClass Description:{0}",helpAttribute.Description);
+                }
+            }
+            Console.ReadLine();
+        }
+        
+    }
+    
+    [AttributeUsage(AttributeTargets.Class,AllowMultiple =false,Inherited =false)]
+    //AttributeTargets:指定可以对他们使用应用特性的应用程序元素
+    //AllowMultiple：指定能否为一个程序元素指定多个属性实例
+    //Inherited:指示的属性能否由派生类和重写成员继承
+    public class HelpAttribute : Attribute
+    {
+        protected string description;
+        public HelpAttribute(string description_in)
+        {
+            this.description = description_in;
+        }
+        public string Description
+        {
+            get
+            {
+                return this.description;
+            }
+        }
+        public string Name
+        {
+            set;
+            get;
+        }
+    }
+
+    //value type, System.Type, object,enum
+    [Help("this is a do-nothing class",Name ="cainiao")]
+    public class AnyClass
+    {
+
+    }
+   
+}

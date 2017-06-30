@@ -1,0 +1,270 @@
+C# 泛型Generic
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            MyGenericArray<int> intArray = new MyGenericArray<int>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                intArray.SetItem(i,i*5);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(intArray.GetItem(i)+" ");
+            }
+            Console.WriteLine();
+            MyGenericArray<char> charArray = new MyGenericArray<char>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                charArray.SetItem(i,(char)(i+97));
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(charArray.GetItem(i)+" ");
+            }
+            Console.ReadLine();
+        }
+    }
+    public class MyGenericArray<T>
+    {
+        private T[] array;
+        public MyGenericArray(int size)
+        {
+            array = new T[size + 1];
+        }
+        public T GetItem(int index)
+        {
+            return array[index];
+        }
+        public void SetItem(int index, T value)
+        {
+            array[index] = value;
+        }
+    }
+	//public class SubClass : MyGenericArray<int>
+    //{
+
+    //}
+    //public class SubGenericClass<T> : MyGenericArray<T> where T : struct
+    //{
+
+    //}
+}
+
+
+多重泛型
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            MyGenericArray<int,char> intArray = new MyGenericArray<int,char>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                intArray.SetItem(i,i*5);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(intArray.GetItem(i)+" ");
+            }
+            Console.WriteLine();
+            MyGenericArray<char,string> charArray = new MyGenericArray<char,string>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                charArray.SetItem(i,(char)(i+97));
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(charArray.GetItem(i)+" ");
+            }
+            Console.ReadLine();
+        }
+    }
+    //Dictionary
+    //参数类型 class,interface,instance class
+    public class MyGenericArray<T,K> where T:struct
+    {
+        private T[] array;
+        public MyGenericArray(int size)
+        {
+            array = new T[size + 1];
+        }
+        public T GetItem(int index)
+        {
+            return array[index];
+        }
+        public void SetItem(int index, T value)
+        {
+            array[index] = value;
+        }
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            MyGenericArray<int> intArray = new MyGenericArray<int>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                intArray.SetItem(i,i*5);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(intArray.GetItem(i)+" ");
+            }
+            Console.WriteLine();
+
+            intArray.GenericMethod<string>("Hello Generic");
+            intArray.GenericMethod<int>(100);
+
+            MyGenericArray<char> charArray = new MyGenericArray<char>(5);
+            for (int i = 0; i < 5; i++)
+            {
+                charArray.SetItem(i,(char)(i+97));
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Write(charArray.GetItem(i)+" ");
+            }
+            Console.ReadLine();
+        }
+    }
+    //Dictionary
+    //参数类型 class,interface,instance class
+    public class MyGenericArray<T> where T:struct
+    {
+        private T[] array;
+        public MyGenericArray(int size)
+        {
+            array = new T[size + 1];
+        }
+        public T GetItem(int index)
+        {
+            return array[index];
+        }
+        public void SetItem(int index, T value)
+        {
+            array[index] = value;
+        }
+        //在方法上实现泛型
+        public void GenericMethod<X>(X x)
+        {
+            Console.WriteLine(x.ToString());
+        }
+    }
+    //SubClass不是泛型，是指定的int型
+    //public class SubClass : MyGenericArray<int>
+    //{
+
+    //}
+    //SubGenericClass是泛型
+    //public class SubGenericClass<T> : MyGenericArray<T> where T : struct
+    //{
+
+    //}
+}
+
+
+泛型在Method方法上的实现
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int a, b;
+            char c, d;
+            a = 10;
+            b = 20;
+            c = 'I';
+            d = 'V';
+            Console.WriteLine("a:{0};b:{1}",a,b);
+            Console.WriteLine("c:{0};b:{1}",c,d);
+            Swap<int>(ref a,ref b);
+            Swap<char>(ref c,ref d);
+            Console.WriteLine("a:{0};b:{1}", a, b);
+            Console.WriteLine("c:{0};b:{1}", c, d);
+            Console.ReadLine();
+        }
+        private static void Swap<T>(ref T lhs, ref T rhs)
+        {
+            T temp;
+            temp = lhs;
+            lhs = rhs;
+            rhs = temp;
+        }
+    }
+   
+}
+
+泛型在委托上的实现
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GenericDemo
+{
+    //声明委托
+    delegate T NumberChanger<T>(T n);
+    class Program
+    {
+        static int num = 10;
+        public static int AddNum(int n)
+        {
+            num += n;
+            return num;
+        }
+        public static int MultiNum(int n)
+        {
+            num *= n;
+            return num;
+        }
+        static void Main(string[] args)
+        {
+            //委托实例化
+            NumberChanger<int> nc1 = new NumberChanger<int>(AddNum);
+            NumberChanger<int> nc2 = new NumberChanger<int>(MultiNum);
+            //调用
+            nc1(25);
+            Console.WriteLine(num);
+            nc2(5);
+            Console.WriteLine(num);
+            Console.ReadLine();
+        }
+    }
+   
+}

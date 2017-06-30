@@ -1,0 +1,74 @@
+C# 事件
+
+事件同委托一样，使用之前也需要声明。事件是一种特殊类型的委托，它包含两个参数：指示事件源的“对象源”参数和封装事件的其他任何相关信息的e参数。其中，e参数的类型为System.EventArgs类型或从System.EventArgs类派生的类型。声明事件一般包括以下两个步骤。
+（1）声明事件的委托。
+public delegate void EventHandler(object sender, EventArgs e);
+（2）声明事件本身。在声明事件时，需要使用event关键字。
+public event EventHandler Print;   //声明事件Print
+事件同委托一样，需给事件注册方法列表。一个事件声明之后，该事件的默认值为null。如果希望该事件执行事先指定的操作，则首先向该事件注册方法列表（即委托的调用列表）。注册事件可以使用“+=”运算符。
+声明一个事件之后，如果没有向该事件注册方法，那么该事件的值为空（null）。因此，在调用事件时，往往需要检查该事件是否为空。
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EventDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var e = new EventTest(5);
+            e.SetValue(100);
+            e.ChangeNum += new EventTest.NumManipulationHandler(EventTest.EventFired);
+            e.SetValue(200);
+            Console.ReadLine();
+        }
+    }
+    class EventTest
+    {
+        private int value;
+        //委托声明
+        public delegate void NumManipulationHandler();
+        //事件声明
+        public event NumManipulationHandler ChangeNum;
+
+        public EventTest(int n)
+        {
+            SetValue(n);
+        }
+
+        public static void EventFired()
+        {
+            Console.WriteLine("Binded Event Fired!");
+        }
+        //Event
+        protected virtual void OnNumChanged()
+        {
+            if (ChangeNum!=null)
+            {
+                ChangeNum();
+            }
+            else
+            {
+                Console.WriteLine("Event Fired!");
+            }
+        }
+        //触发Event
+        public void SetValue(int n)
+        {
+            if (value!=n)
+            {
+                value = n;
+                OnNumChanged();
+            }
+        }
+    }
+}
+
+

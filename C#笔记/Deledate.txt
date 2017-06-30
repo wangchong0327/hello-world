@@ -1,0 +1,132 @@
+C#的委托 Deledate
+
+委托是一个能够引用方法的对象，能够调用它所指向的方法。而且，在程序运行期间，同一个委托可以调用不同的方法，只要改变它引用的方法即可。所有委托类型的基类是System.Delegate类。System.Delegate类本身不是委托类型，而且不允许显式地直接从该类派生新的类型。委托同类一样，在使用之前需要声明。委托类型的声明将创建一个协定，该协定指定一个或多个方法的签名。委托是委托类型的实例，它可以引用静态方法或者实例方法。声明委托需要使用delegate关键字。语法如下：
+delegate-modifiers delegate return-type identifier
+delegate-modifiers表示委托的修饰符（可选），它包括new、public、protected、internal和private共5个关键字。其中，public、protected、internal和private修饰符控制委托的可访问性。它们的意义具体说明如下所示。
+public修饰符：表示该委托是公开的，访问不受限制。
+protected修饰符：表示该委托只能是本身委托访问。
+internal修饰符：表示该委托只能是在当前应用程序中访问。
+private修饰符：表示该委托只能是本身访问。
+注意：只有在其他类型中声明委托时，才能够使用new修饰符。它表示所声明的委托会隐藏具有相同名称的继承成员。
+return-type表示委托的返回类型。identifier表示用于指定委托的类型名称，包含一个方法的名称和方法参数。return-type和identifier将共同确定方法的返回类型、方法名称和方法参数。
+下面声明名称为MyDelegate的委托MyDelegate委托的返回类型为int，方法参数为int i, int j。
+public delegate int MyDelegate(int i,int j);     //声明委托MyDelegate
+注意：委托类型默认是从System.Delegate派生的类类型，它隐含为密封类型，因此不能从委托类型派生一个新的类型。
+委托声明好了后，就要给委托添加方法列表，使得创建对象后可以依次执行各个方法。给委托添加方法列表即创建向委托注册方法。如果一个方法要注册到某一个委托中，那么该方法的签名必须与该委托的所指定的签名完全匹配。匹配规则如下：
+方法的返回类型必须和委托的返回类型相同。
+方法的方法参数必须和委托的方法参数相同，参数的具体名称可以不相同。
+委托也是一个类，因此，委托需要实例化。委托实例化可以创建委托类型的实例，并向该实例注册方法列表。委托类型的实例的方法列表可以为静态方法、实例方法或者另外一个委托实例。
+注意：委托实例化，它把静态方法、实例方法或者另外一个委托的名称作为该实例的方法参数进行传递。
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DelegateDemo1
+{
+    //声明委托
+    delegate int NumberChanger(int n);
+    class Program
+    {
+        static int num = 10;
+        static void Main(string[] args)
+        {
+            //实例化委托
+            NumberChanger nc1 = new NumberChanger(AddNum);
+            //调用静态方法
+            nc1(25);
+            Console.WriteLine("Value of Num:{0}",num);
+
+            //通过委托调用实例化方法
+            MyClass mc = new MyClass();
+            NumberChanger nc2 = new NumberChanger(mc.AddNum);
+            nc2(30);
+            Console.WriteLine("Value of instance num:{0}",mc.num);
+            NumberChanger nc3 = new NumberChanger(mc.MutliNum);
+            nc3(2);
+            Console.WriteLine("Value of instance num:{0}",mc.num);
+            Console.ReadLine();
+        }
+        public static int AddNum(int p)
+        {
+            num += p;
+            return num;
+        }
+    }
+    class MyClass
+    {
+        public int num = 10;
+        public int AddNum(int p)
+        {
+            num += p;
+            return num;
+        }
+        public int MutliNum(int p)
+        {
+            num *= p;
+            return num;
+        }
+    }
+}
+
+
+//Multi-casting deledate
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DelegateDemo2
+{
+    //Multi-casting deledate
+    delegate void D(int n);
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            D cd1 = new D(C.M1);
+            cd1(-1);
+            D cd2 = new D(C.M2);
+            cd2(-2);
+            D cd3 = cd1 + cd2;
+            cd3(10);
+            Console.WriteLine("##########################");
+            C c = new C();
+            D cd4 = new D(cd3);
+            cd3 += cd4;
+            cd3(3);
+            Console.WriteLine("##########################");
+            cd3 += cd1;
+            cd3(20);
+            Console.WriteLine("##########################");
+            cd3 -= cd1;
+            cd3(10);
+            Console.WriteLine("##########################");
+            cd3 -= cd2;
+            cd3 -= cd4;
+            cd3(5);
+            Console.ReadLine();
+
+        }
+    }
+    class C
+    {
+        public static void M1(int i)
+        {
+            Console.WriteLine("c.M1:"+i);
+        }
+        public static void M2(int i)
+        {
+            Console.WriteLine("c.M2:"+i);
+        }
+        public void M3(int i)
+        {
+            Console.WriteLine("c,M3:"+i);
+        }
+    }
+}
